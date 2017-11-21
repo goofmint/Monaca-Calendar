@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    let success = function(message) {
+      alert("Success: " + JSON.stringify(message));
+    };
+    
+    let error = function(message) {
+      alert("Error: " + message);
+    };
+    
+    ons.ready(function() {
+      const createCalendar = document.getElementById('createCalendar');
+      createCalendar.addEventListener('click', function(e) {
+        const createCalOptions = window.plugins.calendar.getCreateCalendarOptions();
+        createCalOptions.calendarName = "Monaca";
+        createCalOptions.calendarColor = "#0254AC";
+        window.plugins.calendar.createCalendar(createCalOptions,success,error);
+      }, false);
+      
+      const today = document.getElementById('today');
+      today.addEventListener('click', function(e) {
+        const title = '今日の予定';
+        const eventLocation = "Home";
+        const notes = "予定の詳細";
+        const calendarName = 'Monaca';
+        const startDate = new Date(2017,12,1,18,30,0,0,0);
+        const endDate = new Date(2017,12,1,19,30,0,0,0);
+        const calOptions = window.plugins.calendar.getCalendarOptions();
+        calOptions.firstReminderMinutes = 120;
+        calOptions.secondReminderMinutes = 5;
+        
+        calOptions.recurrence = "monthly";
+        calOptions.recurrenceEndDate = new Date(2018,11,1,0,0,0,0,0);
+        calOptions.calendarName = "Monaca";
+        calOptions.calendarId = 1;
+      
+        calOptions.recurrenceInterval = 2;
+      
+        calOptions.url = "https://www.google.com";
+        window.plugins.calendar.createEventInteractively(
+          title,
+          eventLocation,
+          notes,
+          startDate,
+          endDate,
+          success,
+          error
+        );
+        
+        window.plugins.calendar.createEventInNamedCalendar(
+          title,
+          eventLocation,
+          notes,
+          startDate,
+          endDate,
+          calendarName,
+          success,
+          error
+        );
+        
+      }, false);
+      
+      const search = document.getElementById('search');
+      search.addEventListener('click', function(e) {
+        const title = '今日の予定';
+        const eventLocation = "";
+        const notes = "";
+        const startDate = new Date(2017,12,1,18,30,0,0,0);
+        const endDate = new Date(2018,1,1,19,30,0,0,0);
+        let success = function(message) {
+          const result = document.getElementById('result');
+          result.value = JSON.stringify(message);
+        };
+        window.plugins.calendar.findEvent(
+          title,
+          eventLocation,
+          notes,
+          startDate,
+          endDate,
+          success,
+          error
+        );
+      }, false);
+      
+      const open = document.getElementById('open');
+      open.addEventListener('click', function(e) {
+        const d = new Date(new Date().getTime() + 3*24*60*60*1000);
+        window.plugins.calendar.openCalendar(d, success, error);
+      }, false);
+    });
+  </script>
+</head>
+<body>
+  <ons-page>
+    <p>
+      <ons-button id="createCalendar">カレンダー作成</ons-button>
+    <p>
+    <p>
+      <ons-button id="today">予定作成</ons-button>
+    <p>
+    <p>
+      <ons-button id="search">検索</ons-button>
+      <br />
+      <textarea id="result" rows="5" cols="40"></textarea>
+    <p>
+    <p>
+      <ons-button id="open">3日後のカレンダーを開く</ons-button>
+    </p>
+  </ops-page>
+</body>
+</html>
