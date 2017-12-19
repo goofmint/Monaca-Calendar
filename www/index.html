@@ -14,76 +14,107 @@
 
   <script>
     let success = function(message) {
-      alert("Success: " + JSON.stringify(message));
+      console.log("Success: " + JSON.stringify(message));
     };
     
     let error = function(message) {
-      alert("Error: " + message);
+      console.log("Error: " + message);
     };
     
     ons.ready(function() {
-      const createCalendar = document.getElementById('createCalendar');
+      // カレンダー作成
+      let createCalendar = document.getElementById('createCalendar');
       createCalendar.addEventListener('click', function(e) {
-        const createCalOptions = window.plugins.calendar.getCreateCalendarOptions();
+        // オプション設定
+        let createCalOptions = window.plugins.calendar.getCreateCalendarOptions();
         createCalOptions.calendarName = "Monaca";
         createCalOptions.calendarColor = "#0254AC";
-        window.plugins.calendar.createCalendar(createCalOptions,success,error);
+        window.plugins.calendar.createCalendar(createCalOptions,
+        function() {
+          alert("カレンダー「Monaca」を作成しました。")
+        },
+        error);
       }, false);
       
-      const today = document.getElementById('today');
-      today.addEventListener('click', function(e) {
-        const title = '今日の予定';
-        const eventLocation = "Home";
-        const notes = "予定の詳細";
-        const calendarName = 'Monaca';
-        const startDate = new Date(2017,12,1,18,30,0,0,0);
-        const endDate = new Date(2017,12,1,19,30,0,0,0);
-        const calOptions = window.plugins.calendar.getCalendarOptions();
+      // 予定作成
+      let createSchedule = document.getElementById('createSchedule');
+      createSchedule.addEventListener('click', function(e) {
+        let title = '今日の予定';
+        let eventLocation = "Home";
+        let notes = "予定の詳細";
+        
+        // 予定の日付
+        let startDate = new Date();
+        let endDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate(),
+          startDate.getHours() + 1,
+          startDate.getMinutes(),
+          startDate.getSeconds()
+        );
+          
+        // オプション情報
+        let calOptions = window.plugins.calendar.getCalendarOptions();
+        
+        // リマインド設定
         calOptions.firstReminderMinutes = 120;
         calOptions.secondReminderMinutes = 5;
         
+        // 繰り返し設定（１年間、2か月に1回繰り返す）
         calOptions.recurrence = "monthly";
-        calOptions.recurrenceEndDate = new Date(2018,11,1,0,0,0,0,0);
-        calOptions.calendarName = "Monaca";
-        calOptions.calendarId = 1;
-      
+        calOptions.recurrenceEndDate = new Date(
+          startDate.getFullYear() + 1,
+          startDate.getMonth(),
+          startDate.getDate(),
+          startDate.getHours(),
+          startDate.getMinutes(),
+          startDate.getSeconds()
+        );
         calOptions.recurrenceInterval = 2;
+        
+        // 登録するカレンダー情報
+        calOptions.calendarName = "Monaca";
       
+        // URL      
         calOptions.url = "https://www.google.com";
-        window.plugins.calendar.createEventInteractively(
+        
+        // 入力フォームを表示してから登録
+        window.plugins.calendar.createEventInteractivelyWithOptions(
           title,
           eventLocation,
           notes,
           startDate,
           endDate,
+          calOptions,
           success,
           error
         );
-        
-        window.plugins.calendar.createEventInNamedCalendar(
-          title,
-          eventLocation,
-          notes,
-          startDate,
-          endDate,
-          calendarName,
-          success,
-          error
-        );
-        
       }, false);
       
-      const search = document.getElementById('search');
+      // 検索
+      let search = document.getElementById('search');
       search.addEventListener('click', function(e) {
-        const title = '今日の予定';
-        const eventLocation = "";
-        const notes = "";
-        const startDate = new Date(2017,12,1,18,30,0,0,0);
-        const endDate = new Date(2018,1,1,19,30,0,0,0);
+        // 検索条件
+        let title = '今日の予定';
+        let eventLocation = "";
+        let notes = "";
+        let startDate = new Date();
+        let endDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth() + 1,
+          startDate.getDate(),
+          startDate.getHours(),
+          startDate.getMinutes(),
+          startDate.getSeconds()
+        );
+        
+        // 予定が取得できた時のコールバック（テキストエリアに表示）
         let success = function(message) {
           const result = document.getElementById('result');
           result.value = JSON.stringify(message);
         };
+        // 検索実行
         window.plugins.calendar.findEvent(
           title,
           eventLocation,
@@ -95,8 +126,10 @@
         );
       }, false);
       
-      const open = document.getElementById('open');
+      // カレンダーを開く
+      let open = document.getElementById('open');
       open.addEventListener('click', function(e) {
+        // 3日後を指定して開く
         const d = new Date(new Date().getTime() + 3*24*60*60*1000);
         window.plugins.calendar.openCalendar(d, success, error);
       }, false);
@@ -109,7 +142,7 @@
       <ons-button id="createCalendar">カレンダー作成</ons-button>
     <p>
     <p>
-      <ons-button id="today">予定作成</ons-button>
+      <ons-button id="createSchedule">予定作成</ons-button>
     <p>
     <p>
       <ons-button id="search">検索</ons-button>
